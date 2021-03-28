@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="X4PriceComparatorLib" xsi:noNamespaceSchemaLocation="../xsd/md.xsd">
+	<cues>		
+		<!--
+ 		output:
+			$stationList: [All stations in radar range]		
+		-->
+		<library name="FindStationsInRadarRange">
+			<actions>
+                <set_value name="$stationList" exact="[]" />
+                <find_cluster name="$clusters" multiple="true"/> <!-- maybe also space="player.galaxy" -->
+                <do_all exact="$clusters.count" counter="$i">
+                    <set_value name="$cluster" exact="$clusters.{$i}" />
+                    <debug_text text="'Cluster: %1'.[$cluster]" filter="general" chance="0"/>
+                    <find_station name="$stations" space="$cluster" known="true" multiple="true" />
+                    <do_all exact="$stations.count" counter="$j">
+                        <set_value name="$station" exact="$stations.{$j}" />
+                        <debug_text text="'Station: %1'.[$station]" filter="general" chance="0"/>
+                        <debug_text text="'Station isradarvisible: %1'.[$station.isradarvisible]" filter="general" chance="0"/>
+                        <do_if value="$station.isradarvisible" exact="true">
+                            <append_to_list name="$stationList" exact="$station" />                            
+                        </do_if>
+                    </do_all>
+                </do_all>
+			</actions>
+		</library>
+        <!--
+        input:
+            $stationList: [list with stations to search through]
+            $wareToFindPriceFor: [ware to look for]    
+ 		output:
+			$stationWithHighestBuyPriceForWare: [Station and price with the highest price for given ware. fe: [0xa90e, 123.25]		
+		-->
+        <library name="GetStationWithHighestBuyPriceForWare">
+			<actions>
+                <set_value name="$stationWithHighestBuyPriceForWare" exact="null" />
+                <set_value name="$highestPrice" exact="0" />
+                <do_all exact="$stationList.count" counter="$i">
+                    <set_value name="$station" exact="$stationList.{$i}" />
+                    <debug_text text="'Station for buyprice: %1'.[$station]" filter="general"/>
+                    <debug_text text="'Station buys: %1'.[$station.buyprices]" filter="general"/>
+                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general"/>
+                    <do_if value="$station.buyprices.keys.list.indexof.{$wareToFindPriceFor}" exact="0" negate="true">
+                        <debug_text text="'Price for ware to buy: %1'.[$station.buyprices.{$wareToFindPriceFor}]" filter="general"/>
+                        <do_if value="$station.buyprices.{$wareToFindPriceFor} gt $highestPrice" exact="true">
+                            <set_value name="$highestPrice" exact="$station.buyprices.{$wareToFindPriceFor}" />
+                            <set_value name="$stationWithHighestBuyPriceForWare" exact="[$station,$highestPrice]" />
+                            <debug_text text="'New highestPrice for ware %2: %1'.[$highestPrice, $wareToFindPriceFor]" filter="general"/>
+                        </do_if>
+                    </do_if>
+                </do_all>
+                <debug_text text="'stationWithHighestBuyPriceForWare endresult: %1'.[$stationWithHighestBuyPriceForWare]" filter="general"/>
+			</actions>
+		</library>
+        <!--
+        input:
+            $stationList: [list with stations to search through]
+            $wareToFindPriceFor: [ware to look for]    
+ 		output:
+			$stationWithLowestSellPriceForWare: [Station and price with the lowest price for given ware. fe: [0xa90e, 123.25]		
+		-->
+        <library name="GetStationWithLowestSellPriceForWare">
+			<actions>
+                <set_value name="$stationWithLowestSellPriceForWare" exact="null" />
+                <set_value name="$lowestPrice" exact="0" />
+                <do_all exact="$stationList.count" counter="$i">
+                    <set_value name="$station" exact="$stationList.{$i}" />
+                    <debug_text text="'Station for sellprice: %1'.[$station]" filter="general"/>
+                    <debug_text text="'Station sells: %1'.[$station.sellprices]" filter="general"/>
+                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general"/>
+                    <do_if value="$station.sellprices.keys.list.indexof.{$wareToFindPriceFor}" exact="0" negate="true">
+                        <debug_text text="'Price for ware to sell: %1'.[$station.sellprices.{$wareToFindPriceFor}]" filter="general"/>
+                        <do_if value="$lowestPrice == 0 or $station.sellprices.{$wareToFindPriceFor} lt $lowestPrice" exact="true">
+                            <set_value name="$lowestPrice" exact="$station.sellprices.{$wareToFindPriceFor}" />
+                            <set_value name="$stationWithLowestSellPriceForWare" exact="[$station,$lowestPrice]" />
+                            <debug_text text="'New lowestPrice for ware %2: %1'.[$lowestPrice, $wareToFindPriceFor]" filter="general"/>
+                        </do_if>
+                    </do_if>
+                </do_all>
+                <debug_text text="'stationWithLowestSellPriceForWare endresult: %1'.[$stationWithLowestSellPriceForWare]" filter="general"/>
+			</actions>
+		</library>     
+	</cues>
+</mdscript>

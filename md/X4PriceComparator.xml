@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="X4PriceComparator" xsi:noNamespaceSchemaLocation="../xsd/md.xsd">
+	<cues>		
+        <cue name="Add_Interact_Actions" instantiate="true">
+            <conditions>
+              <event_cue_signalled cue="md.Interact_Menu_API.Get_Actions" />
+            </conditions>
+            <actions>
+              <set_value name="$target" exact="event.param.$object"/>
+              <do_if value="$target.isclass.{class.ship}">
+                <signal_cue_instantly
+                  cue="md.Interact_Menu_API.Add_Action"
+                  param = "table[
+                      $id         = 'open_price_comparator',
+                      $section    = 'interaction',
+                      $text       = 'Price comparator',
+                      $callback   = Open_Price_Comparator_Menu
+                    ]"/>
+              </do_if>
+            </actions>
+          </cue>
+          <cue name="Open_Price_Comparator_Menu" instantiate="true" namespace="this">
+            <conditions>
+              <event_cue_signalled/>
+            </conditions>
+            <actions>
+              <set_value name="$menuData" exact="[]" />
+              <include_actions ref="md.X4PriceComparatorLib.FindStationsInRadarRange"/>
+              <get_ware_definition result="$allWares" flags="economy" />
+              <!-- set_value name="$allWares" exact="lookup.waretransport.{'container'}" / -->
+              <debug_text text="'allWares: %1'.[$allWares]" filter="general"/>
+              <do_all exact="$allWares.count" counter="$wareCounter">
+                <set_value name="$wareData" exact="[]" />
+                <set_value name="$wareToFindPriceFor" exact="$allWares.{$wareCounter}" /> 
+                <append_to_list name="$wareData" exact="$wareToFindPriceFor" />
+                <include_actions ref="md.X4PriceComparatorLib.GetStationWithHighestBuyPriceForWare"/>
+                <append_to_list name="$wareData" exact="$stationWithHighestBuyPriceForWare" />
+                <include_actions ref="md.X4PriceComparatorLib.GetStationWithLowestSellPriceForWare"/>
+                <append_to_list name="$wareData" exact="$stationWithLowestSellPriceForWare" />
+                <append_to_list name="$menuData" exact="$wareData" />
+              </do_all>
+              <debug_text text="'MenuData: %1'.[$menuData]" filter="general"/>
+
+              <set_value name="$textValue" exact="'Is this working ?'"/>  
+              <signal_cue_instantly
+                cue = "md.Simple_Menu_API.Create_Menu"
+                param = "table[
+                    $columns = 5, 
+                    $title   = 'Price comparator',
+                    $width   = 1000,
+                    $height  = 500
+                  ]"/>
+                <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable=false,$fixed=true]"/>
+                <signal_cue_instantly
+                    cue = "md.Simple_Menu_API.Make_Text"
+                    param = "table[$col=1, $text='Ware']"/>
+                <signal_cue_instantly
+                    cue = "md.Simple_Menu_API.Make_Text"
+                    param = "table[$col=2, $colSpan=2, $text='Buy']"
+                />
+                <signal_cue_instantly
+                    cue = "md.Simple_Menu_API.Make_Text"
+                    param = "table[$col=4, $colSpan=2, $text='Sell']"/>                    
+                <do_all exact="$menuData.count" counter="$menuDataCounter">
+                    <set_value name="$menuLine" exact="$menuData.{$menuDataCounter}" />
+                    
+                    <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row"/>
+                    <debug_text text="'$menuLine.{1}: %1'.[$menuLine.{1}]" filter="general"/>
+                    <signal_cue_instantly
+                        cue = "md.Simple_Menu_API.Make_Text"
+                        param = "table[$col=1, $text='%1'.[$menuLine.{1}]]"/>
+                    
+                    <debug_text text="'$menuLine.{2}.{1}: %1'.[$menuLine.{2}.{1}]" filter="general"/>    
+                    <signal_cue_instantly
+                        cue = "md.Simple_Menu_API.Make_Text"
+                        param = "table[$col=2, $text='%1\n%2'.[$menuLine.{2}.{1}.sector.name,$menuLine.{2}.{1}.name]]"
+                    />
+                    
+                    <debug_text text="'$menuLine.{2}.{2}: %1'.[$menuLine.{2}.{2}.formatted.default]" filter="general"/>
+                    <signal_cue_instantly
+                        cue = "md.Simple_Menu_API.Make_Text"
+                        param = "table[$col=3, $text='%1'.[$menuLine.{2}.{2}.formatted.default]]"/>                    
+                    
+                    <debug_text text="'$menuLine.{3}.{1}: %1'.[$menuLine.{3}.{1}]" filter="general"/>
+                    <signal_cue_instantly
+                        cue = "md.Simple_Menu_API.Make_Text"
+                        param = "table[$col=4, $text='%1\n%2'.[$menuLine.{3}.{1}.sector.name,$menuLine.{3}.{1}.name]]"/>
+                    
+                    <debug_text text="'$menuLine.{3}.{2}: %1'.[$menuLine.{3}.{2}.formatted.default]" filter="general"/>
+                    <signal_cue_instantly
+                        cue = "md.Simple_Menu_API.Make_Text"
+                        param = "table[$col=5, $text='%1'.[$menuLine.{3}.{2}.formatted.default]]"/>
+               </do_all>   
+            </actions>
+          </cue>
+	</cues>
+</mdscript>
