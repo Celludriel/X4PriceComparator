@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content id="x4_price_comparator" name="X4 Price Comparator" description="Comparates min and max prices of wares in the sattelite netweork"  
+    author="Celludriel" version="1.0.0" date="2021-03-27" save="0" />
