@@ -37,19 +37,19 @@
                 <set_value name="$highestPrice" exact="0" />
                 <do_all exact="$stationList.count" counter="$i">
                     <set_value name="$station" exact="$stationList.{$i}" />
-                    <debug_text text="'Station for buyprice: %1'.[$station]" filter="general"/>
-                    <debug_text text="'Station buys: %1'.[$station.buyprices]" filter="general"/>
-                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general"/>
+                    <debug_text text="'Station for buyprice: %1'.[$station]" filter="general" chance="0"/>
+                    <debug_text text="'Station buys: %1'.[$station.buyprices]" filter="general" chance="0"/>
+                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general" chance="0"/>
                     <do_if value="$station.buyprices.keys.list.indexof.{$wareToFindPriceFor}" exact="0" negate="true">
-                        <debug_text text="'Price for ware to buy: %1'.[$station.buyprices.{$wareToFindPriceFor}]" filter="general"/>
+                        <debug_text text="'Price for ware to buy: %1'.[$station.buyprices.{$wareToFindPriceFor}]" filter="general" chance="0"/>
                         <do_if value="$station.buyprices.{$wareToFindPriceFor} gt $highestPrice" exact="true">
                             <set_value name="$highestPrice" exact="$station.buyprices.{$wareToFindPriceFor}" />
                             <set_value name="$stationWithHighestBuyPriceForWare" exact="[$station,$highestPrice]" />
-                            <debug_text text="'New highestPrice for ware %2: %1'.[$highestPrice, $wareToFindPriceFor]" filter="general"/>
+                            <debug_text text="'New highestPrice for ware %2: %1'.[$highestPrice, $wareToFindPriceFor]" filter="general" chance="0"/>
                         </do_if>
                     </do_if>
                 </do_all>
-                <debug_text text="'stationWithHighestBuyPriceForWare endresult: %1'.[$stationWithHighestBuyPriceForWare]" filter="general"/>
+                <debug_text text="'stationWithHighestBuyPriceForWare endresult: %1'.[$stationWithHighestBuyPriceForWare]" filter="general" chance="0"/>
 			</actions>
 		</library>
         <!--
@@ -65,19 +65,19 @@
                 <set_value name="$lowestPrice" exact="0" />
                 <do_all exact="$stationList.count" counter="$i">
                     <set_value name="$station" exact="$stationList.{$i}" />
-                    <debug_text text="'Station for sellprice: %1'.[$station]" filter="general"/>
-                    <debug_text text="'Station sells: %1'.[$station.sellprices]" filter="general"/>
-                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general"/>
+                    <debug_text text="'Station for sellprice: %1'.[$station]" filter="general" chance="0"/>
+                    <debug_text text="'Station sells: %1'.[$station.sellprices]" filter="general" chance="0"/>
+                    <debug_text text="'Ware to find price for: %1'.[$wareToFindPriceFor]" filter="general" chance="0"/>
                     <do_if value="$station.sellprices.keys.list.indexof.{$wareToFindPriceFor}" exact="0" negate="true">
-                        <debug_text text="'Price for ware to sell: %1'.[$station.sellprices.{$wareToFindPriceFor}]" filter="general"/>
+                        <debug_text text="'Price for ware to sell: %1'.[$station.sellprices.{$wareToFindPriceFor}]" filter="general" chance="0"/>
                         <do_if value="$lowestPrice == 0 or $station.sellprices.{$wareToFindPriceFor} lt $lowestPrice" exact="true">
                             <set_value name="$lowestPrice" exact="$station.sellprices.{$wareToFindPriceFor}" />
                             <set_value name="$stationWithLowestSellPriceForWare" exact="[$station,$lowestPrice]" />
-                            <debug_text text="'New lowestPrice for ware %2: %1'.[$lowestPrice, $wareToFindPriceFor]" filter="general"/>
+                            <debug_text text="'New lowestPrice for ware %2: %1'.[$lowestPrice, $wareToFindPriceFor]" filter="general" chance="0"/>
                         </do_if>
                     </do_if>
                 </do_all>
-                <debug_text text="'stationWithLowestSellPriceForWare endresult: %1'.[$stationWithLowestSellPriceForWare]" filter="general"/>
+                <debug_text text="'stationWithLowestSellPriceForWare endresult: %1'.[$stationWithLowestSellPriceForWare]" filter="general" chance="0"/>
 			</actions>
 		</library>     
 	</cues>
